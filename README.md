@@ -6,7 +6,7 @@ Simulates legacy combat (1.8.8) for legacy clients on modern (1.19+) servers. Th
 LegacyCombatSimulation was build for server (networks) who do not want to maintain multiple minecraft versions, but also dont want to completely drop 1.8 (as it is still commonly used in the pvp community).
 
 ## Milestones
-12.03.2023: First build with correct motion tracking and knockbag<br>
+12.03.2023: First build with correct motion tracking and knockback<br>
 18.03.2023: First production ready release
 
 ## Contributing
