@@ -110,12 +110,13 @@ public class AttackHandler {
                         //entity.g((double) (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * 0.5F));
                         //this.motX *= 0.6D;
                         //this.motZ *= 0.6D;
-                        float yaw = entity.getYRot();
+                        float yaw = player.getYRot() * 0.017453292F; /* Math.DEGREES_TO_RADIANS */
                         entity.addDeltaMovement(new Vec3(
                             -Mth.sin(yaw) * (float) i * 0.5F,
                             0.1D,
                             Mth.cos(yaw) * (float) i * 0.5F
                         ));
+                        player.setDeltaMovement(player.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                         player.setSprinting(false);
                     }
 
