@@ -1,0 +1,11 @@
+lobbynavigator:
+  invrows: 2
+  displaying: 1-18
+  icons:
+    normal: IRON_HELMET
+    offline: CHAINMAIL_HELMET
+enderpearlcooldown: 5
+spawn: world,0.5,100,0.5,0,0
+realtime: true
+world: world
+backupfolder: games_lobby

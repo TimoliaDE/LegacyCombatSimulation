@@ -1,0 +1,22 @@
+name: TGamesHub
+version: ${VERSION}
+author: Timolia
+main: ${MAINCLASS}
+api-version: "1.20"
+
+built: ${BUILT}
+branch: ${BRANCH}
+pipeline: ${PIPELINE}
+pipeline_url: ${PIPELINEURL}
+commit: ${COMMIT}
+project_url: ${PROJECTURL}
+
+depend: [TCommon]
+softdepend: [UserSenderX, NPCApi]
+
+commands:
+    spawn:
+        usage: /spawn
+        description: Teleportiert dich zum Spawn
+    removespawn:
+        usage: /removespawn
