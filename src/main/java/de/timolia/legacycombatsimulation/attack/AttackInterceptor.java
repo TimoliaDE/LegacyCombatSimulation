@@ -14,7 +14,6 @@ import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
-import net.minecraft.network.protocol.game.ServerboundInteractPacket.ActionType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
@@ -35,7 +34,7 @@ public class AttackInterceptor {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 ServerboundInteractPacket packet = (ServerboundInteractPacket) event.getPacket().getHandle();
-                if (packet.getActionType() != ActionType.ATTACK) {
+                if (!packet.isAttack()) {
                     return;
                 }
                 Player player = event.getPlayer();
@@ -69,9 +68,8 @@ public class AttackInterceptor {
         }
 
         private void ensureAttack() {
-            ActionType actionType = getActionType();
-            if (actionType != ActionType.ATTACK) {
-                throw new IllegalStateException(Objects.toString(actionType));
+            if (!isAttack()) {
+                throw new IllegalStateException();
             }
         }
 

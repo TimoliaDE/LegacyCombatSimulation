@@ -1,6 +1,7 @@
 package de.timolia.legacycombatsimulation.attack;
 
 import de.timolia.legacycombatsimulation.attack.nms.EnchantmentManager;
+import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.attack.nms.ItemStackHurt;
 import de.timolia.legacycombatsimulation.attack.nms.PacketHandler;
 import de.timolia.legacycombatsimulation.movement.PlayerVelocity;
@@ -103,7 +104,8 @@ public class AttackHandler {
                 double d1 = entity.getDeltaMovement().y;
                 double d2 = entity.getDeltaMovement().z;
                 //boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f); TODO we might need to revisit
-                boolean flag2 = entity.hurt(player.damageSources().playerAttack(player).critical(flag), f); // Paper - add critical damage API
+                //boolean flag2 = entity.hurt(player.damageSources().playerAttack(player).critical(flag), f); // Paper - add critical damage API
+                boolean flag2 = EntityHurt.hurtEntity(entity, player.damageSources().playerAttack(player).critical(flag), f); // Paper - add critical damage API
 
                 if (flag2) {
                     if (i > 0) {

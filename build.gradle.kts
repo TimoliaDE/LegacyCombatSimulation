@@ -47,7 +47,7 @@ tasks {
     }
 }
 dependencies {
-    paperweight.devBundle("io.papermc.paper", "1.20-R0.1-SNAPSHOT")
+    paperweight.devBundle("io.papermc.paper", "1.20.1-R0.1-SNAPSHOT")
     compileOnly(group = "com.comphenix.protocol", name = "ProtocolLib", version = "5.1.0")
 }
 
@@ -61,8 +61,16 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+    reobfJar {
+        outputJar.set(layout.buildDirectory.file("libs/LegacyCombatSimulation-final-${project.version}.jar"))
+    }
+    compileJava {
+        options.encoding = "UTF-8"
+    }
 }
 
 // Replace plugin.yml
