@@ -1,5 +1,6 @@
 package de.timolia.legacycombatsimulation.attack;
 
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.attack.nms.EnchantmentManager;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.attack.nms.ItemStackHurt;
@@ -27,22 +28,23 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
 public class AttackHandler {
-    public boolean handleAttack(ServerPlayer player, Entity damaged) {
-        PacketHandler.process(player, damaged, () -> {
-            serverPlayerAttack(player, damaged);
+    public boolean handleAttack(ServerPlayer player, Entity damaged, DebugContext debugContext) {
+        PacketHandler.process(player, damaged, debugContext, () -> {
+            serverPlayerAttack(player, damaged, debugContext);
         });
         return false;
     }
 
-    private void serverPlayerAttack(ServerPlayer player, Entity target) {
+    private void serverPlayerAttack(ServerPlayer player, Entity target, DebugContext debugContext) {
         if (player.gameMode.getGameModeForPlayer() == GameType.SPECTATOR) {
             player.setCamera(target);
+            debugContext.fail("Spectator");
         } else {
-            playerAttack(player, target);
+            playerAttack(player, target, debugContext);
         }
     }
 
-    private void playerAttack(ServerPlayer player, Entity entity) {
+    private void playerAttack(ServerPlayer player, Entity entity, DebugContext debugContext) {
         /*if (entity.aD()) { irrelevant */
         if (!entity.skipAttackInteraction(player)) { /* !entity.l(this) */
             //float f = (float) player.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
@@ -105,7 +107,7 @@ public class AttackHandler {
                 double d2 = entity.getDeltaMovement().z;
                 //boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f); TODO we might need to revisit
                 //boolean flag2 = entity.hurt(player.damageSources().playerAttack(player).critical(flag), f); // Paper - add critical damage API
-                boolean flag2 = EntityHurt.hurtEntity(entity, player.damageSources().playerAttack(player).critical(flag), f); // Paper - add critical damage API
+                boolean flag2 = EntityHurt.hurtEntity(entity, player.damageSources().playerAttack(player).critical(flag), f, debugContext); // Paper - add critical damage API
 
                 if (flag2) {
                     if (i > 0) {
@@ -218,7 +220,11 @@ public class AttackHandler {
                     //entity.extinguish();
                     entity.clearFire();
                 }
+            } else {
+                debugContext.fail("No damage f=%s f1=$s", f, f1);
             }
+        } else {
+            debugContext.fail("skipAttackInteraction()");
         }
         /*}*/
     }

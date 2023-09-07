@@ -1,6 +1,7 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import com.google.common.base.Function;
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -21,7 +22,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 
 public class Damage {
     /* 1.8 signature EntityHuman#d(final DamageSource damagesource, float f) */
-    public static boolean damageEntity0(LivingEntity entity, DamageSource damagesource, float f) {
+    public static boolean damageEntity0(LivingEntity entity, DamageSource damagesource, float f,
+        DebugContext debugContext) {
         if (!entity.isInvulnerableTo(damagesource)) {
             final boolean human = entity instanceof net.minecraft.world.entity.player.Player;
             float originalDamage = f;
@@ -104,6 +106,7 @@ public class Damage {
                 // Paper end
             }
             if (event.isCancelled()) {
+                debugContext.fail("bukkit damage event cancelled");
                 return false;
             }
 
@@ -149,7 +152,7 @@ public class Damage {
                 // CraftBukkit end
 
                 entity.getCombatTracker().recordDamage(damagesource, f);
-                Bukkit.broadcastMessage("Damage: " + f);
+                debugContext.info("finalDamage=%.2f", f);
                 entity.setHealth(entity.getHealth() - f);
                 // CraftBukkit start
                 if (!human) {
@@ -172,7 +175,7 @@ public class Damage {
                     if (damagesource.getEntity() instanceof ServerPlayer) {
                         CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((ServerPlayer) damagesource.getEntity(), entity, damagesource, originalDamage, f, true); // Paper - fix taken/dealt param order
                     }
-
+                    debugContext.fail("BLOCKING modifier");
                     return false;
                 } else {
                     return originalDamage > 0;
@@ -180,6 +183,7 @@ public class Damage {
                 // CraftBukkit end
             }
         }
+        debugContext.fail("likely isInvulnerableTo");
         return false; // CraftBukkit
     }
 

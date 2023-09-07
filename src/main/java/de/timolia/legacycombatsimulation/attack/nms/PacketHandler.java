@@ -1,6 +1,7 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import com.mojang.logging.LogUtils;
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -15,7 +16,8 @@ import org.slf4j.Logger;
 public class PacketHandler {
     static final Logger LOGGER = LogUtils.getLogger();
 
-    public static void process(ServerPlayer player, Entity entity, Runnable attack) {
+    public static void process(ServerPlayer player, Entity entity, DebugContext debugContext,
+        Runnable attack) {
         if (!(entity instanceof ItemEntity) && !(entity instanceof ExperienceOrb) && !(entity instanceof AbstractArrow) && (entity != player || player.isSpectator())) {
             ItemStack itemstack = player.getItemInHand(InteractionHand.MAIN_HAND);
 
@@ -26,8 +28,11 @@ public class PacketHandler {
                     player.containerMenu.sendAllDataToRemote();
                 }
                 // CraftBukkit end
+            } else {
+                debugContext.fail("Item enable logic");
             }
         } else {
+            debugContext.fail("Entity type");
             player.connection.disconnect(Component.translatable("multiplayer.disconnect.invalid_entity_attacked"),  org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_ENTITY_ATTACKED); // Paper - add cause
             LOGGER.warn("Player {} tried to attack an invalid entity", player.getName().getString());
         }

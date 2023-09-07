@@ -10,11 +10,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LegacyCombatSimulation extends JavaPlugin implements Listener {
+    public static Plugin plugin;
+
     @Override
     public void onEnable() {
+        plugin = this;
         AttackHandler attackHandler = new AttackHandler();
         AttackInterceptor interceptor = new AttackInterceptor(attackHandler);
         interceptor.register(this);

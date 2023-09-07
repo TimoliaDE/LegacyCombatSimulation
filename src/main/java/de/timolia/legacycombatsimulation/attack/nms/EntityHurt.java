@@ -1,6 +1,6 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
-import de.timolia.legacycombatsimulation.movement.PlayerVelocity;
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
@@ -12,31 +12,34 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import org.bukkit.Bukkit;
 
 public class EntityHurt {
-    public static boolean hurtEntity(Entity entity, DamageSource damagesource, float amount) {
+    public static boolean hurtEntity(Entity entity, DamageSource damagesource, float amount,
+        DebugContext debugContext) {
         if (entity instanceof ServerPlayer player) {
-            return hurt(player, damagesource, amount);
+            return hurt(player, damagesource, amount, debugContext);
         }
         if (entity instanceof Player) {
             throw new IllegalArgumentException("Unexpected: " + entity.getClass().getSimpleName());
         }
         if (entity instanceof LivingEntity living) {
-            return hurtLiving(living, damagesource, amount);
+            return hurtLiving(living, damagesource, amount, debugContext);
         }
         throw new IllegalArgumentException("Unexpected: " + entity.getClass().getSimpleName());
     }
 
     /* EntityPlayer or ServerPlayer  */
-    public static boolean hurt(ServerPlayer player, DamageSource damagesource, float amount) {
+    public static boolean hurt(ServerPlayer player, DamageSource damagesource, float amount,
+        DebugContext debugContext) {
         if (player.isInvulnerableTo(damagesource)) {
+            debugContext.fail("invulnerable to source %s", damagesource.toString());
             return false;
         } else {
             boolean flag = false; /*this.server.ae() && this.cr() && "fall".equals(damagesource.translationIndex);*/
 
             if (!flag && player.spawnInvulnerableTime > 0/* this.invulnerableTicks > 0 */
                 && !damagesource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)/*&& damagesource != DamageSource.OUT_OF_WORLD*/) {
+                debugContext.fail("spawnInvulnerableTime");
                 return false;
             } else {
                 //if (damagesource instanceof EntityDamageSource) { DamageSource now has a nullable entity
@@ -45,6 +48,7 @@ public class EntityHurt {
                     if (
                         entity instanceof Player entityPlayer /* entity instanceof EntityHuman */
                         && !player.canHarmPlayer(entityPlayer) /* && !this.a((EntityHuman) entity) */) {
+                        debugContext.fail("canHarmPlayer (direct)");
                         return false;
                     }
 
@@ -60,6 +64,7 @@ public class EntityHurt {
                         && arrow.getOwner() instanceof Player entityPlayer
                         && !player.canHarmPlayer(entityPlayer)
                     ) {
+                        debugContext.fail("canHarmPlayer (arrow)");
                         return false;
                     }
                 }
@@ -67,7 +72,7 @@ public class EntityHurt {
                 // Paper start - cancellable death events
                 //return super.hurt(source, amount); paper code is from 1.20
                 player.queueHealthUpdatePacket = true;
-                boolean damaged = hurtPlayer(player, damagesource, amount);
+                boolean damaged = hurtPlayer(player, damagesource, amount, debugContext);
                 player.queueHealthUpdatePacket = false;
                 if (player.queuedHealthUpdatePacket != null) {
                     player.connection.send(player.queuedHealthUpdatePacket);
@@ -80,16 +85,19 @@ public class EntityHurt {
     }
 
     /* EntityHuman or Player */
-    public static boolean hurtPlayer(ServerPlayer player, DamageSource damagesource, float amount) {
+    public static boolean hurtPlayer(ServerPlayer player, DamageSource damagesource, float amount,
+        DebugContext debugContext) {
         /*if (this.isInvulnerable(damagesource)) { checked by parent
             return false;
         } else */ if (player.getAbilities().invulnerable /*this.abilities.isInvulnerable*/
             && !damagesource.is(DamageTypeTags.BYPASSES_INVULNERABILITY) /*!damagesource.ignoresInvulnerability() */) {
+            debugContext.fail("invulnerable abilities");
             return false;
         } else {
             //this.ticksFarFromPlayer = 0;
             player.setNoActionTime(0);
             if (player.isDeadOrDying()/*this.getHealth() <= 0.0F*/) {
+                debugContext.fail("isDeadOrDying");
                 return false;
             } else {
                 /*if (this.isSleeping() && !this.world.isClientSide) { 1.20 moved this down to living
@@ -119,14 +127,15 @@ public class EntityHurt {
                         entity = ((EntityArrow) entity).shooter;
                     }*/
                     //TODO removeEntitiesOnShoulder?
-                    return hurtLiving(player, damagesource, amount);
+                    return hurtLiving(player, damagesource, amount, debugContext);
                 }
             }
         }
     }
 
     /* EnittyLiving or LivingEntity */
-    public static boolean hurtLiving(LivingEntity player, DamageSource damagesource, float amount) {
+    public static boolean hurtLiving(LivingEntity player, DamageSource damagesource, float amount,
+        DebugContext debugContext) {
         /*if (this.isInvulnerable(damagesource)) { checked by parent
             return false;
         } else if (this.world.isClientSide) { always server side
@@ -139,9 +148,11 @@ public class EntityHurt {
              * above's 1.20 player.isDeadOrDying() is equivalent to this.getHealth() <= 0.0F
              */
             if (player.isRemoved()) {
+                debugContext.fail("removed");
                 return false;
             } else if (damagesource.is(DamageTypeTags.IS_FIRE)/* damagesource.o() */
                 && player.hasEffect(MobEffects.FIRE_RESISTANCE)/* && this.hasEffect(MobEffectList.FIRE_RESISTANCE)*/) {
+                debugContext.fail("FIRE_RESISTANCE");
                 return false;
             } else {
                 /* moved down as in 1.20 */
@@ -161,11 +172,12 @@ public class EntityHurt {
                 /* mojang removed this in 1.20 but craftbukkit readded it */
                 if ((float) player.invulnerableTime > (float) player.invulnerableDuration / 2.0F/*(float) this.noDamageTicks > (float) this.maxNoDamageTicks / 2.0F*/) {
                     if (amount <= player.lastHurt/*this.lastDamage*/) {
+                        debugContext.fail("hurt time left=%s", (float) player.invulnerableTime - (float) player.invulnerableDuration / 2.0F);
                         return false;
                     }
 
                     // CraftBukkit start
-                    if (!Damage.damageEntity0(player, damagesource, amount - player.lastHurt/*f - this.lastDamage*/)) {
+                    if (!Damage.damageEntity0(player, damagesource, amount - player.lastHurt/*f - this.lastDamage*/, debugContext)) {
                         return false;
                     }
                     // CraftBukkit end
@@ -175,7 +187,7 @@ public class EntityHurt {
                 } else {
                     // CraftBukkit start
                     //float previousHealth = this.getHealth();
-                    if (!Damage.damageEntity0(player, damagesource, amount)) {
+                    if (!Damage.damageEntity0(player, damagesource, amount, debugContext)) {
                         return false;
                     }
 
@@ -241,11 +253,12 @@ public class EntityHurt {
 
                         //this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw); again after death velo
                         //this.a(entity, f, d0, d1);
-                        applyVelocity(player, d0, d1);
+                        applyVelocity(player, d0, d1, debugContext);
                         //method for 1.20 ClientboundHurtAnimationPacket
                         player.indicateDamage(d0, d1);
                     } else {
                         //this.aw = (float) ((int) (Math.random() * 2.0D) * 180);
+                        debugContext.fail("keine ahnung bro");
                     }
                 }
 
@@ -274,7 +287,8 @@ public class EntityHurt {
         }
     }
 
-    private static void applyVelocity(LivingEntity player, double x, double z) {
+    private static void applyVelocity(LivingEntity player, double x, double z,
+        DebugContext debugContext) {
         if (player.getRandom().nextDouble() >= player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)) {
             //this.ai = true;
             player.hasImpulse = true;
@@ -293,7 +307,9 @@ public class EntityHurt {
                 motY = 0.4000000059604645D;
             }
             player.setDeltaMovement(motX, motY, motZ);
-            Bukkit.broadcastMessage(motX + " " + motY + " " + motZ);
+            debugContext.info("velo (%.2f, %.2f, %.2f)", motX, motY, motZ);
+        } else {
+            debugContext.tag("KNOCK_RESI");
         }
     }
 }

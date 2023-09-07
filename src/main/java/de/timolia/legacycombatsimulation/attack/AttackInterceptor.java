@@ -8,9 +8,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
@@ -42,18 +42,23 @@ public class AttackInterceptor {
                     return;
                 }
                 ServerPlayer severPlayer = ((CraftPlayer) player).getHandle();
-                Packet<?> replacement = createReplacementPacket(severPlayer, packet);
+                DebugContext debugContext = DebugProvider.start(player);
+                Packet<?> replacement = createReplacementPacket(severPlayer, packet, debugContext);
                 event.setPacket(new PacketContainer(packetType, replacement));
             }
         });
     }
 
-    private Packet<?> createReplacementPacket(ServerPlayer player, ServerboundInteractPacket packet) {
+    private Packet<?> createReplacementPacket(
+        ServerPlayer player,
+        ServerboundInteractPacket packet,
+        DebugContext debugContext
+    ) {
         ByteBuf buffer = Unpooled.buffer();
         try {
             FriendlyByteBuf byteBuf = new FriendlyByteBuf(buffer);
             packet.write(byteBuf);
-            return new InterceptPacket(byteBuf, player);
+            return new InterceptPacket(byteBuf, player, debugContext);
         } finally {
             buffer.release();
         }
@@ -61,10 +66,16 @@ public class AttackInterceptor {
 
     class InterceptPacket extends ServerboundInteractPacket {
         private final ServerPlayer player;
+        private final DebugContext debugContext;
 
-        public InterceptPacket(FriendlyByteBuf buf, ServerPlayer serverPlayer) {
+        public InterceptPacket(
+            FriendlyByteBuf buf,
+            ServerPlayer serverPlayer,
+            DebugContext debugContext
+        ) {
             super(buf);
             this.player = serverPlayer;
+            this.debugContext = debugContext;
         }
 
         private void ensureAttack() {
@@ -83,15 +94,19 @@ public class AttackInterceptor {
         public void dispatch(Handler handler) {
             ensureMainThread();
             ensureAttack();
+            debugContext.markAsArrivedOnMainThread();
             Entity entity = getTarget(player.serverLevel());
             /* support for papers UnknownEntityEvents */
             if (entity == null) {
+                debugContext.fail("Unknown entity");
                 super.dispatch(handler);
                 return;
             }
-            if (attackHandler.handleAttack(player, entity)) {
+            if (attackHandler.handleAttack(player, entity, debugContext)) {
+                debugContext.fail("LGS commanded mc takeover");
                 super.dispatch(handler);
             }
+            debugContext.finish();
         }
     }
 }
