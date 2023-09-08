@@ -5,6 +5,7 @@ import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
+import de.timolia.legacycombatsimulation.projectile.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
         registerBukkitListeners(
             new OffHand(),
             new EnderPearl(),
+            new Bow(),
             this
         );
     }
