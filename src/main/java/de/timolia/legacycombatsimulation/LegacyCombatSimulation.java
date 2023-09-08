@@ -4,6 +4,8 @@ import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
+import de.timolia.legacycombatsimulation.inventory.OffHand;
+import de.timolia.legacycombatsimulation.projectile.EnderPearl;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -22,7 +24,17 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
         AttackHandler attackHandler = new AttackHandler();
         AttackInterceptor interceptor = new AttackInterceptor(attackHandler);
         interceptor.register(this);
-        Bukkit.getPluginManager().registerEvents(this, this);
+        registerBukkitListeners(
+            new OffHand(),
+            new EnderPearl(),
+            this
+        );
+    }
+
+    private void registerBukkitListeners(Listener... listeners) {
+        for (Listener listener : listeners) {
+            Bukkit.getPluginManager().registerEvents(listener, this);
+        }
     }
 
     @EventHandler

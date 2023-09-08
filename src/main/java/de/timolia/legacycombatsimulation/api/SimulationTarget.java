@@ -1,5 +1,7 @@
 package de.timolia.legacycombatsimulation.api;
 
 public enum SimulationTarget {
-    ATTACK
+    ATTACK,
+    ENDER_PEARL,
+    OFF_HAND
 }
