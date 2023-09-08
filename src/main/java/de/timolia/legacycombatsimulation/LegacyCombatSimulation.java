@@ -4,6 +4,7 @@ import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
+import de.timolia.legacycombatsimulation.consume.GoldenApple;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
 import de.timolia.legacycombatsimulation.projectile.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
@@ -29,6 +30,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new OffHand(),
             new EnderPearl(),
             new Bow(),
+            new GoldenApple(),
             this
         );
     }

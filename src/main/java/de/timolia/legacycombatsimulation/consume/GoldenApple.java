@@ -5,6 +5,7 @@ import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import java.util.Arrays;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +26,7 @@ public class GoldenApple implements Listener {
             return;
         }
         event.setCancelled(true);
-        ((ServerPlayer) player).getFoodData().eat(4, 1.2F);
+        ((CraftPlayer) player).getHandle().getFoodData().eat(4, 1.2F);
 
         //if (!world.isClientSide) {
             //entityhuman.addEffect(new MobEffect(MobEffectList.ABSORBTION.id, 2400, 0));
