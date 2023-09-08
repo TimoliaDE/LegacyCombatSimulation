@@ -13,9 +13,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.gameevent.GameEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -25,7 +25,7 @@ public class Damage {
     public static boolean damageEntity0(LivingEntity entity, DamageSource damagesource, float f,
         DebugContext debugContext) {
         if (!entity.isInvulnerableTo(damagesource)) {
-            final boolean human = entity instanceof net.minecraft.world.entity.player.Player;
+            final boolean human = entity instanceof Player;
             float originalDamage = f;
             Function<Double, Double> hardHat = new Function<Double, Double>() {
                 @Override
@@ -44,7 +44,12 @@ public class Damage {
             Function<Double, Double> blocking = new Function<Double, Double>() {
                 @Override
                 public Double apply(Double f) {
-                    return -((entity.isDamageSourceBlocked(damagesource)) ? f : 0.0);
+                    if (human) {
+                        if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR) && entity.isBlocking() && f > 0.0F) {
+                            return -(f - ((1.0F + f) * 0.5F));
+                        }
+                    }
+                    return -0.0;
                 }
             };
             float blockingModifier = blocking.apply((double) f).floatValue();
@@ -93,24 +98,13 @@ public class Damage {
             float absorptionModifier = absorption.apply((double) f).floatValue();
 
             EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(entity, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
-            if (damagesource.getEntity() instanceof net.minecraft.world.entity.player.Player) {
-                // Paper start - PlayerAttackEntityCooldownResetEvent
-                if (damagesource.getEntity() instanceof ServerPlayer) {
-                    ServerPlayer player = (ServerPlayer) damagesource.getEntity();
-                    if (new com.destroystokyo.paper.event.player.PlayerAttackEntityCooldownResetEvent(player.getBukkitEntity(), entity.getBukkitEntity(), player.getAttackStrengthScale(0F)).callEvent()) {
-                        player.resetAttackStrengthTicker();
-                    }
-                } else {
-                    ((net.minecraft.world.entity.player.Player) damagesource.getEntity()).resetAttackStrengthTicker();
-                }
-                // Paper end
-            }
             if (event.isCancelled()) {
                 debugContext.fail("bukkit damage event cancelled");
                 return false;
             }
 
             f = (float) event.getFinalDamage();
+            // TODO damage armor
 
             // Resistance
             if (event.getDamage(DamageModifier.RESISTANCE) < 0) {
@@ -187,6 +181,7 @@ public class Damage {
         return false; // CraftBukkit
     }
 
+    //TODO armor
     protected static float getDamageAfterArmorAbsorb(LivingEntity entity, DamageSource source, float amount) {
         if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
             // this.hurtArmor(damagesource, f); // CraftBukkit - Moved into damageEntity0(DamageSource, float)
@@ -212,8 +207,14 @@ public class Damage {
                 return amount;
             } else {
                 i = EnchantmentHelper.getDamageProtection(entity.getArmorSlots(), source);
+                if (i > 20) {
+                    i = 20;
+                }
+
                 if (i > 0) {
-                    amount = CombatRules.getDamageAfterMagicAbsorb(amount, (float) i);
+                    float j = 25 - i;
+                    float f1 = amount * j;
+                    amount = f1 / 25.0F;
                 }
 
                 return amount;
