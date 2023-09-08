@@ -117,7 +117,7 @@ public class BowEntity extends Arrow {
                     && getOwner() instanceof ServerPlayer/*this.shooter instanceof EntityPlayer*/
                 ) {
                     //((EntityPlayer) this.shooter).playerConnection.sendPacket(new PacketPlayOutGameStateChange(6, 0.0F));
-                    ((ServerPlayer) entityliving).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+                    ((ServerPlayer) getOwner()).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
                 }
             }
 

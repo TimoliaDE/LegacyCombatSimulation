@@ -3,7 +3,6 @@ package de.timolia.legacycombatsimulation.consume;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import java.util.Arrays;
-import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
