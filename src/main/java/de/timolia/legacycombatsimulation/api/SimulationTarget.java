@@ -4,5 +4,6 @@ public enum SimulationTarget {
     ATTACK,
     ENDER_PEARL,
     OFF_HAND,
-    BOW
+    BOW,
+    GOLDEN_APPLE
 }

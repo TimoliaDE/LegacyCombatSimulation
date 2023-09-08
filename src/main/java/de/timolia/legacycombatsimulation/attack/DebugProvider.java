@@ -18,6 +18,7 @@ public class DebugProvider {
         Collections.shuffle(colorsLeft);
     }
     private static final Map<Player, ChatColor> colors = new HashMap<>();
+    private static final DebugContext dummy = new DebugContextDummy();
 
     public static ChatColor color(Player player) {
         return colors.computeIfAbsent(player, player1 -> colorsLeft.pop());
@@ -36,6 +37,10 @@ public class DebugProvider {
             2
         );
         return context;
+    }
+
+    public static DebugContext dummy() {
+        return dummy;
     }
 
     public static class DebugContextImpl implements DebugContext {
@@ -90,6 +95,33 @@ public class DebugProvider {
         @Override
         public void markAsArrivedOnMainThread() {
             handheld = true;
+        }
+    }
+
+    public static class DebugContextDummy implements DebugContext {
+        @Override
+        public void markAsArrivedOnMainThread() {
+
+        }
+
+        @Override
+        public void fail(String message, Object... args) {
+
+        }
+
+        @Override
+        public void info(String message, Object... args) {
+
+        }
+
+        @Override
+        public void tag(String tag) {
+
+        }
+
+        @Override
+        public void finish() {
+
         }
     }
 
