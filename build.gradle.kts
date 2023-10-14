@@ -38,14 +38,6 @@ if (localEnvFile.exists()) {
         project.extra.set("mavenUrl", System.getenv("MAVEN_DEV_URL") as String)
     }
 }
-tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
-    reobfJar {
-        outputJar.set(layout.buildDirectory.file("libs/${project.name}-final-${project.version}.jar"))
-    }
-}
 dependencies {
     paperweight.devBundle("io.papermc.paper", "1.20.1-R0.1-SNAPSHOT")
     compileOnly(group = "com.comphenix.protocol", name = "ProtocolLib", version = "5.1.0")
@@ -62,11 +54,11 @@ java {
 }
 
 tasks {
-    assemble {
+    withType<PublishToMavenRepository> {
         dependsOn(reobfJar)
     }
-    reobfJar {
-        outputJar.set(layout.buildDirectory.file("libs/LegacyCombatSimulation-final-${project.version}.jar"))
+    assemble {
+        dependsOn(reobfJar)
     }
     compileJava {
         options.encoding = "UTF-8"
@@ -113,6 +105,7 @@ repositories {
 publishing {
     publications {
         register("release", MavenPublication::class) {
+            artifact(tasks.jar.get().archiveFile.get()).classifier = "obfuscated"
             pom {
                 properties.put("CI_COMMIT_REF_NAME", System.getenv("CI_COMMIT_REF_NAME") ?: "local")
                 properties.put("CI_PIPELINE_ID", System.getenv("CI_PIPELINE_ID") ?: "local")

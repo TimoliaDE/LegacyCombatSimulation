@@ -1,4 +1,4 @@
-package de.timolia.legacycombatsimulation.projectile;
+package de.timolia.legacycombatsimulation.projectile.arrow;
 
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;

@@ -5,5 +5,7 @@ public enum SimulationTarget {
     ENDER_PEARL,
     OFF_HAND,
     BOW,
-    GOLDEN_APPLE
+    GOLDEN_APPLE,
+    FISHING_ROD,
+    CREATIVE_GIVE_ITEMS
 }
