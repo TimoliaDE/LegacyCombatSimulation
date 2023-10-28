@@ -2,7 +2,6 @@ image: gradle:8.3-jdk17
 
 stages:
   - build
-  - main
 
 build:
   stage: build
@@ -10,22 +9,8 @@ build:
     - docker
   script:
     - chmod +x gradlew
-    - ./gradlew --build-cache --warning-mode all build
-    - ./gradlew --build-cache --warning-mode all publish
+    - ./gradlew --build-cache --warning-mode all build publish
   artifacts:
     name: \"${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}:${CI_PIPELINE_ID}:${CI_JOB_NAME}\"
     paths:
       - 'build/libs/*.jar'
-
-main:
-  stage: main
-  dependencies:
-    - build
-  script:
-    - chmod +x wrapper.sh
-    - ./wrapper.sh
-    - mv build/libs/*.jar .
-  artifacts:
-    name: \"${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}:${CI_PIPELINE_ID}:${CI_JOB_NAME}\"
-    paths:
-      - '*.jar'
