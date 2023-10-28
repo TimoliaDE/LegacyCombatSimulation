@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -24,6 +25,7 @@ public class GoldenApple implements Listener {
         if (!enchanted && type != Material.GOLDEN_APPLE) {
             return;
         }
+        consumeOne(player.getInventory().getItem(event.getHand()));
         event.setCancelled(true);
         ((CraftPlayer) player).getHandle().getFoodData().eat(4, 1.2F);
 
@@ -50,6 +52,13 @@ public class GoldenApple implements Listener {
                 //entityhuman.addEffect(new MobEffect(this.l, this.m * 20, this.n));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5 * 20, 1));
             //}
+        }
+    }
+
+    private void consumeOne(ItemStack mirrored) {
+        mirrored.setAmount(mirrored.getAmount() - 1);
+        if (mirrored.isEmpty()) {
+            mirrored.setType(Material.AIR);
         }
     }
 }

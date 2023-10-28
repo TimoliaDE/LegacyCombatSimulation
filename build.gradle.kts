@@ -1,5 +1,4 @@
 var mainClass = "de.timolia.legacycombatsimulation.LegacyCombatSimulation"
-var pluginVersion: String = System.getenv().getOrDefault("CI_JOB_ID", "unknown")
 
 group = System.getenv("CI_PROJECT_NAMESPACE")?.replace("/", ".") ?: "local"
 version = "git-" + (System.getenv("CI_COMMIT_REF_NAME") ?: "local")
@@ -69,7 +68,7 @@ tasks {
 tasks.withType<ProcessResources> {
     filesMatching("plugin.yml") {
         expand(
-            "VERSION" to pluginVersion,
+            "VERSION" to System.getenv().getOrDefault("CI_JOB_ID", "unknown"),
             "MAINCLASS" to mainClass,
             "BUILT" to System.getenv().getOrDefault("CI_COMMIT_TIMESTAMP", "unknown"),
             "BRANCH" to System.getenv().getOrDefault("CI_COMMIT_REF_NAME", "unknown"),
