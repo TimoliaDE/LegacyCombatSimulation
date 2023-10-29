@@ -18,14 +18,24 @@ public class TargetRegistry {
     }
 
     public void enable(Player player, Iterable<SimulationTarget> targets) {
-        registry.putAll(player, targets);
+        if (registry.putAll(player, targets)) {
+            triggerChangeEvent(player);
+        }
     }
 
     public void disable(Player player, SimulationTarget target) {
-        registry.remove(player, target);
+        if (registry.remove(player, target)) {
+            triggerChangeEvent(player);
+        }
     }
 
     public void disableAll(Player player) {
-        registry.removeAll(player);
+        if (!registry.removeAll(player).isEmpty()) {
+            triggerChangeEvent(player);
+        }
+    }
+
+    private void triggerChangeEvent(Player player) {
+        new SimulationTargetChangeEvent(player).callEvent();
     }
 }
