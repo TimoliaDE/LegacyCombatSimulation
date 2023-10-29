@@ -307,7 +307,7 @@ public class EntityHurt {
                 motY = 0.4000000059604645D;
             }
             player.setDeltaMovement(motX, motY, motZ);
-            debugContext.info("velo (%.2f, %.2f, %.2f)", motX, motY, motZ);
+            debugContext.info("velo (%.2f, %.2f, %.2f) %.2f %.2f", motX, motY, motZ, x, z);
         } else {
             debugContext.tag("KNOCK_RESI");
         }
