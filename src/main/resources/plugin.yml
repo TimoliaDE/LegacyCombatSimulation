@@ -1,0 +1,12 @@
+name: LegacyCombatSimulation
+version: ${VERSION}
+author: Timolia
+main: ${MAINCLASS}
+api-version: "1.20"
+
+built: ${BUILT}
+branch: ${BRANCH}
+pipeline: ${PIPELINE}
+pipeline_url: ${PIPELINEURL}
+commit: ${COMMIT}
+project_url: ${PROJECTURL}
