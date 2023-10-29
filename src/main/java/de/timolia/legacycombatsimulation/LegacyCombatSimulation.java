@@ -31,7 +31,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
         registerBukkitListeners(
             new OffHand(),
             new EnderPearl(),
-            //new Bow(),
+            new Bow(),
             new GoldenApple(),
             //new FishingRod(),
             new CreativeGiveItems(),
