@@ -1,13 +1,13 @@
 package de.timolia.legacycombatsimulation.projectile.arrow;
 
 import de.timolia.legacycombatsimulation.attack.DebugProvider;
+import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.movement.PlayerVelocity;
 import de.timolia.legacycombatsimulation.projectile.BullShitMath;
 import de.timolia.legacycombatsimulation.projectile.ProjectileMath;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
