@@ -49,8 +49,12 @@ public class BowEntity extends Arrow {
         }
 
         Entity entity = entityHitResult.getEntity();
+        DebugContext debugContext = entity.getBukkitEntity() instanceof org.bukkit.entity.Player player
+            ? DebugProvider.start(player)
+            : DebugProvider.dummy();
+        debugContext.markAsArrivedOnMainThread();
         // CraftBukkit start - Moved damage call
-        if (EntityHurt.hurtEntity(entity, damagesource, k, DebugProvider.dummy())/*movingobjectposition.entity.damageEntity(damagesource, (float) k)*/) {
+        if (EntityHurt.hurtEntity(entity, damagesource, k, debugContext)/*movingobjectposition.entity.damageEntity(damagesource, (float) k)*/) {
             if (
                 isOnFire()/*this.isBurning()*/
                 && entity.getType() != EntityType.ENDERMAN/*!(movingobjectposition.entity instanceof EntityEnderman)*/
@@ -131,5 +135,6 @@ public class BowEntity extends Arrow {
             this.yRotO += 180.0F;
             //this.as = 0;
         }
+        debugContext.finish();
     }
 }
