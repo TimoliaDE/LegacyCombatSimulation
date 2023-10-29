@@ -82,18 +82,6 @@ tasks.withType<ProcessResources> {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("${project.extra["mavenUrl"] as String}/${project.extra["repository"] as String}")
-        name = "Reposilite"
-
-        authentication {
-            create<BasicAuthentication>("basic")
-        }
-        credentials {
-            username = project.extra["mavenUser"] as String
-            password = project.extra["mavenToken"] as String
-        }
-    }
     maven("https://maven.fabricmc.net/")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://jitpack.io")
