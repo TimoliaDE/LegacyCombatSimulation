@@ -1,6 +1,7 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.projectile.rod.RodEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
@@ -253,7 +254,7 @@ public class EntityHurt {
 
                         //this.aw = (float) (MathHelper.b(d1, d0) * 180.0D / 3.1415927410125732D - (double) this.yaw); again after death velo
                         //this.a(entity, f, d0, d1);
-                        applyVelocity(player, d0, d1, debugContext);
+                        applyVelocity(player, d0, d1, damagesource, debugContext);
                         //method for 1.20 ClientboundHurtAnimationPacket
                         player.indicateDamage(d0, d1);
                     } else {
@@ -287,9 +288,9 @@ public class EntityHurt {
         }
     }
 
-    private static void applyVelocity(LivingEntity player, double x, double z,
-        DebugContext debugContext) {
-        if (player.getRandom().nextDouble() >= player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)) {
+    private static void applyVelocity(LivingEntity player, double x, double z, DamageSource damageSource,
+                                      DebugContext debugContext) {
+        if (true && player.getRandom().nextDouble() >= player.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)) {
             //this.ai = true;
             player.hasImpulse = true;
             float f1 = (float) Math.sqrt(x * x + z * z);
@@ -305,6 +306,11 @@ public class EntityHurt {
             motZ -= z / (double) f1 * (double) f2;
             if (motY > 0.4000000059604645D) {
                 motY = 0.4000000059604645D;
+            }
+            // Rod apparently does not give enough velo by its own
+            if (damageSource.getDirectEntity() instanceof RodEntity) {
+                motX *= 2;
+                motZ *= 2;
             }
             player.setDeltaMovement(motX, motY, motZ);
             debugContext.info("velo (%.2f, %.2f, %.2f) %.2f %.2f", motX, motY, motZ, x, z);

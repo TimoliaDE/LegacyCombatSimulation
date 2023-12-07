@@ -1,16 +1,20 @@
 package de.timolia.legacycombatsimulation;
 
+import de.timolia.legacycombatsimulation.api.ClientVersion;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
 import de.timolia.legacycombatsimulation.attack.ClientAttackSpeedIndicator;
+import de.timolia.legacycombatsimulation.attack.DebugProvider;
 import de.timolia.legacycombatsimulation.consume.GoldenApple;
 import de.timolia.legacycombatsimulation.inventory.CreativeGiveItems;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
 import de.timolia.legacycombatsimulation.projectile.arrow.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
 import java.util.Arrays;
+
+import de.timolia.legacycombatsimulation.projectile.rod.FishingRod;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,9 +37,10 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new EnderPearl(),
             new Bow(),
             new GoldenApple(),
-            //new FishingRod(),
+            new FishingRod(this, new DebugProvider.DebugContextDummy()),
             new CreativeGiveItems(),
             new ClientAttackSpeedIndicator(),
+            new ClientVersion(this),
             this
         );
     }

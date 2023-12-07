@@ -23,7 +23,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 public class BowEntity extends Arrow {
     public BowEntity(Level world, LivingEntity owner, float f) {
         super(world, owner);
-        ProjectileMath.applyBaseVelocity(this, owner, f);
+        ProjectileMath.applyBaseVelocity(this, owner, f, 0.4f, true);
     }
 
     @Override
