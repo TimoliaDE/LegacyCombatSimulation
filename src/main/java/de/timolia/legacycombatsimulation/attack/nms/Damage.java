@@ -16,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.gameevent.GameEvent;
+import org.bukkit.Tag;
 import org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -45,7 +46,7 @@ public class Damage {
                 @Override
                 public Double apply(Double f) {
                     if (human) {
-                        if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR) && entity.isBlocking() && f > 0.0F) {
+                        if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR) && /*entity.isBlocking()*/ isEntityLegacyBlocking(entity) && f > 0.0F) {
                             return -(f - ((1.0F + f) * 0.5F));
                         }
                     }
@@ -220,5 +221,9 @@ public class Damage {
                 return amount;
             }
         }
+    }
+
+    protected static boolean isEntityLegacyBlocking(LivingEntity livingEntity) {
+        return Tag.ITEMS_SWORDS.isTagged(livingEntity.getBukkitLivingEntity().getActiveItem().getType());
     }
 }

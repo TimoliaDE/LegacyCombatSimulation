@@ -7,9 +7,12 @@ import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
 import de.timolia.legacycombatsimulation.attack.ClientAttackSpeedIndicator;
 import de.timolia.legacycombatsimulation.attack.DebugProvider;
+import de.timolia.legacycombatsimulation.blocking.SwordBlocking;
 import de.timolia.legacycombatsimulation.consume.GoldenApple;
+import de.timolia.legacycombatsimulation.environement.FireBlock;
 import de.timolia.legacycombatsimulation.inventory.CreativeGiveItems;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
+import de.timolia.legacycombatsimulation.movement.SwimmingPrevention;
 import de.timolia.legacycombatsimulation.projectile.arrow.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
 import java.util.Arrays;
@@ -41,6 +44,9 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new CreativeGiveItems(),
             new ClientAttackSpeedIndicator(),
             new ClientVersion(this),
+            new SwordBlocking(),
+            new SwimmingPrevention(DebugProvider.dummy()),
+            new FireBlock(),
             this
         );
     }

@@ -80,9 +80,8 @@ public class FishingRod implements Listener {
             org.bukkit.inventory.ItemStack rodItem = event.getPlayer().getInventory().getItemInMainHand();
             if (rodItem.getType() != Material.FISHING_ROD)
                 return;
-            rodItem.damage(3, event.getPlayer()); // 1.8 damages rod by 3 when retracting an entity
+            rodItem.damage(3, event.getPlayer()); // 1.8 damages rod by 3 points when retracting an entity
         }
-
 
         if (event.getState() != State.FISHING)
             return;
