@@ -1,6 +1,6 @@
 package de.timolia.legacycombatsimulation.attack;
 
-import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.attack.nms.EnchantmentManager;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.attack.nms.ItemStackHurt;

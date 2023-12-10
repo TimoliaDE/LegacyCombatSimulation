@@ -6,7 +6,8 @@ import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.AttackHandler;
 import de.timolia.legacycombatsimulation.attack.AttackInterceptor;
 import de.timolia.legacycombatsimulation.attack.ClientAttackSpeedIndicator;
-import de.timolia.legacycombatsimulation.attack.DebugProvider;
+import de.timolia.legacycombatsimulation.attack.debug.DebugCommand;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider;
 import de.timolia.legacycombatsimulation.blocking.SwordBlocking;
 import de.timolia.legacycombatsimulation.consume.GoldenApple;
 import de.timolia.legacycombatsimulation.environement.FireBlock;
@@ -32,6 +33,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
+        getCommand("LegacyCombatSimulation").setExecutor(new DebugCommand());
         AttackHandler attackHandler = new AttackHandler();
         AttackInterceptor interceptor = new AttackInterceptor(attackHandler);
         interceptor.register(this);

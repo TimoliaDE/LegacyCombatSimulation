@@ -10,3 +10,8 @@ pipeline: ${PIPELINE}
 pipeline_url: ${PIPELINEURL}
 commit: ${COMMIT}
 project_url: ${PROJECTURL}
+
+commands:
+  LegacyCombatSimulation:
+    permission: legacycombatsimulation.debug
+    alias: ['lcs']

@@ -1,4 +1,4 @@
-package de.timolia.legacycombatsimulation.attack;
+package de.timolia.legacycombatsimulation.attack.debug;
 
 import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
 import java.util.Collections;
@@ -90,7 +90,7 @@ public class DebugProvider {
             }
             String fullMessage = color(player) + name + " " + message;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.hasPermission("timolia.team")) {
+                if (DebugCommand.isDebugEnabledFor(onlinePlayer.getUniqueId())) {
                     onlinePlayer.sendMessage(fullMessage);
                 }
             }
