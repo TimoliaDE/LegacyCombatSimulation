@@ -34,11 +34,4 @@ public class SwordBlocking implements Listener {
         ServerPlayer serverPlayer = ((CraftPlayer) event.getPlayer()).getHandle();
         serverPlayer.startUsingItem(InteractionHand.MAIN_HAND);
     }
-
-    @EventHandler
-    public void onSneak(PlayerToggleSneakEvent event) {
-        if (event.isSneaking()) {
-            System.out.println("Active Item: " + event.getPlayer().getActiveItem().getType());
-        }
-    }
 }
