@@ -1,7 +1,7 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import com.mojang.logging.LogUtils;
-import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

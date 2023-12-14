@@ -1,7 +1,7 @@
 package de.timolia.legacycombatsimulation.projectile.arrow;
 
-import de.timolia.legacycombatsimulation.attack.DebugProvider;
-import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.movement.PlayerVelocity;
 import de.timolia.legacycombatsimulation.projectile.BullShitMath;

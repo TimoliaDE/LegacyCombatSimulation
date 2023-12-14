@@ -1,7 +1,7 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import com.google.common.base.Function;
-import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;

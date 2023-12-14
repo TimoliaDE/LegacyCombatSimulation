@@ -1,6 +1,6 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
-import de.timolia.legacycombatsimulation.attack.DebugProvider.DebugContext;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.projectile.rod.RodEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;

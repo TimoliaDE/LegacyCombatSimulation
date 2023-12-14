@@ -3,7 +3,7 @@ package de.timolia.legacycombatsimulation.movement;
 import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
-import de.timolia.legacycombatsimulation.attack.DebugProvider;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import de.timolia.legacycombatsimulation.projectile.ProjectileMath;
 import net.minecraft.core.BlockPos;

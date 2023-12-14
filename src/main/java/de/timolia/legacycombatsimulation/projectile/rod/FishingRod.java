@@ -8,7 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
-import de.timolia.legacycombatsimulation.attack.DebugProvider;
+import de.timolia.legacycombatsimulation.attack.debug.DebugProvider;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerPlayer;

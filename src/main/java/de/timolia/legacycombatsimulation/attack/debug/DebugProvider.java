@@ -1,27 +1,31 @@
-package de.timolia.legacycombatsimulation.attack;
+package de.timolia.legacycombatsimulation.attack.debug;
 
 import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class DebugProvider {
-    private static final LinkedList<ChatColor> colorsLeft = new LinkedList<>(Arrays.asList(ChatColor.values()));
-    static {
-        Collections.shuffle(colorsLeft);
-    }
-    private static final Map<Player, ChatColor> colors = new HashMap<>();
+    private static final LinkedList<ChatColor> colorsQueue = new LinkedList<>();
+    private static final Map<Player, ChatColor> colors = new WeakHashMap<>();
     private static final DebugContext dummy = new DebugContextDummy();
 
+    private static ChatColor newColor() {
+        if (colorsQueue.isEmpty()) {
+            Collections.addAll(colorsQueue, ChatColor.values());
+            Collections.shuffle(colorsQueue);
+        }
+        return colorsQueue.pop();
+    }
+
     public static ChatColor color(Player player) {
-        return colors.computeIfAbsent(player, player1 -> colorsLeft.pop());
+        return colors.computeIfAbsent(player, player1 -> newColor());
     }
 
     public static DebugContext start(Player player) {
@@ -86,7 +90,7 @@ public class DebugProvider {
             }
             String fullMessage = color(player) + name + " " + message;
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.hasPermission("timolia.team")) {
+                if (DebugCommand.isDebugEnabledFor(onlinePlayer.getUniqueId())) {
                     onlinePlayer.sendMessage(fullMessage);
                 }
             }
