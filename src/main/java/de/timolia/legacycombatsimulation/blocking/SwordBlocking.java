@@ -2,8 +2,11 @@ package de.timolia.legacycombatsimulation.blocking;
 
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.SwordItem;
 import org.bukkit.Tag;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;

@@ -9,6 +9,7 @@ import de.timolia.legacycombatsimulation.attack.ClientAttackSpeedIndicator;
 import de.timolia.legacycombatsimulation.attack.DebugProvider;
 import de.timolia.legacycombatsimulation.blocking.SwordBlocking;
 import de.timolia.legacycombatsimulation.consume.GoldenApple;
+import de.timolia.legacycombatsimulation.consume.HungerSystem;
 import de.timolia.legacycombatsimulation.environement.FireBlock;
 import de.timolia.legacycombatsimulation.inventory.CreativeGiveItems;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
@@ -16,6 +17,7 @@ import de.timolia.legacycombatsimulation.movement.SwimmingPrevention;
 import de.timolia.legacycombatsimulation.projectile.arrow.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import de.timolia.legacycombatsimulation.projectile.rod.FishingRod;
 import org.bukkit.Bukkit;
@@ -47,6 +49,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new SwordBlocking(),
             new SwimmingPrevention(DebugProvider.dummy()),
             new FireBlock(),
+            new HungerSystem(),
             this
         );
     }
@@ -59,7 +62,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        TargetRegistry.instance().enable(event.getPlayer(), Arrays.asList(SimulationTarget.values()));
+        TargetRegistry.instance().enable(event.getPlayer(), EnumSet.allOf(SimulationTarget.class));
     }
 
     @EventHandler

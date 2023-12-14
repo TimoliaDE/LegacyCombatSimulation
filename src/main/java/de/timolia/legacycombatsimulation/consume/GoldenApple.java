@@ -3,10 +3,13 @@ package de.timolia.legacycombatsimulation.consume;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import java.util.Arrays;
+
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -14,8 +17,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class GoldenApple implements Listener {
-    @EventHandler
+
+    @EventHandler (priority = EventPriority.HIGH)
     public void onConsume(PlayerItemConsumeEvent event) {
+        if (event.isCancelled())
+            return;
+
         Player player = event.getPlayer();
         if (!TargetRegistry.instance().isEnabled(player, SimulationTarget.GOLDEN_APPLE)) {
             return;

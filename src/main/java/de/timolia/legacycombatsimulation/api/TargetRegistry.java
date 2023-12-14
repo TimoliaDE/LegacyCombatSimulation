@@ -4,6 +4,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+
 public class TargetRegistry {
     private static final TargetRegistry instance = new TargetRegistry();
 
@@ -17,25 +22,28 @@ public class TargetRegistry {
         return registry.containsEntry(player, target);
     }
 
-    public void enable(Player player, Iterable<SimulationTarget> targets) {
+    public void enable(Player player, Collection<SimulationTarget> targets) {
         if (registry.putAll(player, targets)) {
-            triggerChangeEvent(player);
+            new SimulationTargetChangeEvent(player, EnumSet.copyOf(targets), true).callEvent();
         }
+    }
+
+    @Deprecated
+    public void enable(Player player, Iterable<SimulationTarget> targets) {
+        enable(player, (Collection<SimulationTarget>) targets);
     }
 
     public void disable(Player player, SimulationTarget target) {
         if (registry.remove(player, target)) {
-            triggerChangeEvent(player);
+            new SimulationTargetChangeEvent(player, target, false).callEvent();
         }
     }
 
     public void disableAll(Player player) {
-        if (!registry.removeAll(player).isEmpty()) {
-            triggerChangeEvent(player);
+        Collection<SimulationTarget> removed = registry.removeAll(player);
+        if (!removed.isEmpty()) {
+            new SimulationTargetChangeEvent(player, EnumSet.copyOf(removed), false).callEvent();
         }
     }
 
-    private void triggerChangeEvent(Player player) {
-        new SimulationTargetChangeEvent(player).callEvent();
-    }
 }

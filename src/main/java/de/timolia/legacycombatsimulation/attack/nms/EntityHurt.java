@@ -307,7 +307,7 @@ public class EntityHurt {
             if (motY > 0.4000000059604645D) {
                 motY = 0.4000000059604645D;
             }
-            // Rod apparently does not give enough velo by its own
+            // Rod and Bow apparently do not give enough velo by its own
             if (damageSource.getDirectEntity() instanceof RodEntity) {
                 motX *= 2;
                 motZ *= 2;

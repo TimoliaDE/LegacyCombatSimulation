@@ -11,4 +11,5 @@ public enum SimulationTarget {
     CREATIVE_GIVE_ITEMS,
     SWIMMING_PREVENTION,
     INSTANT_IGNITE,
+    HUNGER_AND_REGENERATION,
 }
