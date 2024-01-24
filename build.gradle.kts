@@ -7,7 +7,7 @@ plugins {
     java
     id("maven-publish")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.papermc.paperweight.userdev") version "1.5.5"
+    id("io.papermc.paperweight.userdev") version "1.5.11"
 }
 
 // Load local env file
