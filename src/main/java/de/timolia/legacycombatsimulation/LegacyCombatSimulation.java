@@ -46,12 +46,12 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new GoldenApple(),
             new CreativeGiveItems(),
             new ClientAttackSpeedIndicator(),
-            //new FishingRod(this, new DebugProvider.DebugContextDummy()),
-            //new ClientVersion(this),
-            //new SwordBlocking(),
-            //new SwimmingPrevention(DebugProvider.dummy()),
-            //new FireBlock(),
-            //new HungerSystem(),
+            new FishingRod(this, new DebugProvider.DebugContextDummy()),
+            new ClientVersion(this),
+            new SwordBlocking(),
+            new SwimmingPrevention(DebugProvider.dummy()),
+            new FireBlock(),
+            new HungerSystem(),
             this
         );
     }

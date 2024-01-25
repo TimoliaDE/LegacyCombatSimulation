@@ -12,4 +12,5 @@ public enum SimulationTarget {
     SWIMMING_PREVENTION,
     INSTANT_IGNITE,
     HUNGER_AND_REGENERATION,
+    ITEM_DAMAGE_VALUES,
 }
