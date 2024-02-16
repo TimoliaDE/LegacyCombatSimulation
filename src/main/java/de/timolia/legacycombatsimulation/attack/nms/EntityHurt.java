@@ -282,7 +282,6 @@ public class EntityHurt {
                         player.playSound(sound, player.getSoundVolume(), player.getVoicePitch());
                     }
                 }
-
                 return true;
             //}
         }

@@ -1,5 +1,6 @@
 package de.timolia.legacycombatsimulation.attack;
 
+import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
 import de.timolia.legacycombatsimulation.api.SimulationTarget;
 import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
@@ -69,7 +70,7 @@ public class AttackHandler {
 
 
             //byte b0 = 0; never assigned - might be decopiler leftover
-            float f1 = 0.0F;
+            float damageBonus = 0.0F;
 
             /*if (entity instanceof EntityLiving) {
                 f1 = EnchantmentManager.a(this.bA(), ((EntityLiving) entity).getMonsterType());
@@ -77,11 +78,11 @@ public class AttackHandler {
                 f1 = EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
             }*/
             if (oldItemDamageValues && entity instanceof net.minecraft.world.entity.player.Player)
-                f1 = EnchantmentManager.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
+                damageBonus = EnchantmentManager.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
             else if (entity instanceof LivingEntity) {
-                f1 = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
+                damageBonus = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
             } else {
-                f1 = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), MobType.UNDEFINED);
+                damageBonus = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), MobType.UNDEFINED);
             }
 
             //int i = b0 + EnchantmentManager.a((EntityLiving) this);
@@ -91,7 +92,7 @@ public class AttackHandler {
                 ++i;
             }
 
-            if (f > 0.0F || f1 > 0.0F) {
+            if (f > 0.0F || damageBonus > 0.0F) {
                 boolean flag = player.fallDistance > 0.0F
                     && !player.onGround
                     && !player.onClimbable() /* !this.k_() */
@@ -104,7 +105,7 @@ public class AttackHandler {
                     f *= 1.5F;
                 }
 
-                f += f1;
+                f += damageBonus;
                 boolean flag1 = false;
                 //int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
                 int j = EnchantmentHelper.getFireAspect(player);
@@ -142,7 +143,8 @@ public class AttackHandler {
                             Mth.cos(yaw) * (float) i * 0.5F
                         ));
                         player.setDeltaMovement(player.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
-                        player.setSprinting(false);
+                        if (!LegacyCombatSimulation.configuration.isDisableSprintInterruptionOnAttack())
+                            player.setSprinting(false);
                     }
 
                     if (entity instanceof ServerPlayer entityPlayer && PlayerVelocity.velocityChanged(entityPlayer)) {
@@ -173,7 +175,7 @@ public class AttackHandler {
                     }
 
                     /* most likely magic crit? */
-                    if (f1 > 0.0F) {
+                    if (damageBonus > 0.0F) {
                         //this.c(entity);
                         player.magicCrit(entity);
                     }
@@ -242,7 +244,7 @@ public class AttackHandler {
                     entity.clearFire();
                 }
             } else {
-                debugContext.fail("No damage f=%s f1=$s", f, f1);
+                debugContext.fail("No damage f=%s f1=$s", f, damageBonus);
             }
         } else {
             debugContext.fail("skipAttackInteraction()");

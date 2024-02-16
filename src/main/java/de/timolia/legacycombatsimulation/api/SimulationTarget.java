@@ -13,4 +13,21 @@ public enum SimulationTarget {
     INSTANT_IGNITE,
     HUNGER_AND_REGENERATION,
     ITEM_DAMAGE_VALUES,
+
+    LEGACY_CLIENT_SOUNDS(true),
+    ;
+
+    private boolean onlyForLegacyClients = false;
+
+    SimulationTarget() {
+
+    }
+
+    SimulationTarget(boolean onlyForLegacyClients) {
+        this.onlyForLegacyClients = onlyForLegacyClients;
+    }
+
+    public boolean isOnlyForLegacyClients() {
+        return onlyForLegacyClients;
+    }
 }
