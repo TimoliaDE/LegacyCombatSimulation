@@ -35,6 +35,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 public class FishingRod implements Listener {
 
@@ -49,20 +50,22 @@ public class FishingRod implements Listener {
     public void onNonDamageHits(ProjectileHitEvent event) {
         if (event.isCancelled())
             return;
-        if (event.getEntity().getType() == EntityType.FISHING_HOOK) {
-            if (!(event.getHitEntity() instanceof Player player))
-                return;
-            Projectile projectile = ((CraftProjectile) event.getEntity()).getHandle();
-            ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-            Entity attacker = null;
-            if (event.getEntity().getShooter() instanceof Player shooter)
-                attacker = ((CraftPlayer) shooter).getHandle();
-            DamageSource damageSource = ((CraftWorld) player.getWorld()).getHandle().damageSources().thrown(projectile, attacker);
-            EntityHurt.hurtEntity(serverPlayer, damageSource, Float.MIN_VALUE, debugContext);
-            if (((CraftProjectile) event.getEntity()).getHandle() instanceof RodEntity rodEntity)
-                rodEntity.hitPlayer();
+        if (event.getEntity().getType() != EntityType.FISHING_HOOK)
+            return;
+        if (!(event.getHitEntity() instanceof Player player))
+            return;
+        if (!TargetRegistry.instance().isEnabled(player, SimulationTarget.FISHING_ROD))
+            return;
 
-        }
+        Projectile projectile = ((CraftProjectile) event.getEntity()).getHandle();
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
+        Entity attacker = null;
+        if (event.getEntity().getShooter() instanceof Player shooter)
+            attacker = ((CraftPlayer) shooter).getHandle();
+        DamageSource damageSource = ((CraftWorld) player.getWorld()).getHandle().damageSources().thrown(projectile, attacker);
+        EntityHurt.hurtEntity(serverPlayer, damageSource, Float.MIN_VALUE, debugContext);
+        if (((CraftProjectile) event.getEntity()).getHandle() instanceof RodEntity rodEntity)
+            rodEntity.hitPlayer();
     }
 
 

@@ -282,7 +282,6 @@ public class EntityHurt {
                         player.playSound(sound, player.getSoundVolume(), player.getVoicePitch());
                     }
                 }
-
                 return true;
             //}
         }
@@ -308,7 +307,7 @@ public class EntityHurt {
                 motY = 0.4000000059604645D;
             }
             // Rod and Bow apparently do not give enough velo by its own
-            if (damageSource.getDirectEntity() instanceof RodEntity) {
+            if (damageSource.getDirectEntity() instanceof RodEntity && player.onGround()) {
                 motX *= 2;
                 motZ *= 2;
             }

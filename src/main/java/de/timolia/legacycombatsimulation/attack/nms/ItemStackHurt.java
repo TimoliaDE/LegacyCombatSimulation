@@ -13,7 +13,6 @@ public class ItemStackHurt {
     */
     public static void hurtEnemy(ItemStack itemStack, LivingEntity target, Player attacker) {
         Item item = itemStack.getItem();
-
         if (item.hurtEnemy(itemStack, target, attacker)) {
             attacker.awardStat(Stats.ITEM_USED.get(item));
         }

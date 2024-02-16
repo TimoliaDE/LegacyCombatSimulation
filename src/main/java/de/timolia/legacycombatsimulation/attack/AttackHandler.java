@@ -1,5 +1,8 @@
 package de.timolia.legacycombatsimulation.attack;
 
+import de.timolia.legacycombatsimulation.LegacyCombatSimulation;
+import de.timolia.legacycombatsimulation.api.SimulationTarget;
+import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import de.timolia.legacycombatsimulation.attack.nms.EnchantmentManager;
 import de.timolia.legacycombatsimulation.attack.nms.EntityHurt;
@@ -14,9 +17,12 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.EnderDragonPart;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
@@ -27,7 +33,14 @@ import org.bukkit.event.entity.EntityExhaustionEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
+import java.util.UUID;
+
 public class AttackHandler {
+
+    // Update on version change: net.minecraft.world.item
+    protected static final UUID BASE_ATTACK_DAMAGE_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
+
+
     public boolean handleAttack(ServerPlayer player, Entity damaged, DebugContext debugContext) {
         PacketHandler.process(player, damaged, debugContext, () -> {
             serverPlayerAttack(player, damaged, debugContext);
@@ -47,20 +60,29 @@ public class AttackHandler {
     private void playerAttack(ServerPlayer player, Entity entity, DebugContext debugContext) {
         /*if (entity.aD()) { irrelevant */
         if (!entity.skipAttackInteraction(player)) { /* !entity.l(this) */
+            boolean oldItemDamageValues = TargetRegistry.instance().isEnabled(player.getBukkitEntity(), SimulationTarget.ITEM_DAMAGE_VALUES);
             //float f = (float) player.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-            float f = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            float f;
+            if (oldItemDamageValues)
+                f = calculateAttributeValue(player.getAttribute(Attributes.ATTACK_DAMAGE), player.getMainHandItem());
+            else
+                f = (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+
+
             //byte b0 = 0; never assigned - might be decopiler leftover
-            float f1 = 0.0F;
+            float damageBonus = 0.0F;
 
             /*if (entity instanceof EntityLiving) {
                 f1 = EnchantmentManager.a(this.bA(), ((EntityLiving) entity).getMonsterType());
             } else {
                 f1 = EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
             }*/
-            if (entity instanceof LivingEntity) {
-                f1 = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
+            if (oldItemDamageValues && entity instanceof net.minecraft.world.entity.player.Player)
+                damageBonus = EnchantmentManager.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
+            else if (entity instanceof LivingEntity) {
+                damageBonus = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), ((LivingEntity) entity).getMobType());
             } else {
-                f1 = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), MobType.UNDEFINED);
+                damageBonus = EnchantmentHelper.getDamageBonus(player.getMainHandItem(), MobType.UNDEFINED);
             }
 
             //int i = b0 + EnchantmentManager.a((EntityLiving) this);
@@ -70,7 +92,7 @@ public class AttackHandler {
                 ++i;
             }
 
-            if (f > 0.0F || f1 > 0.0F) {
+            if (f > 0.0F || damageBonus > 0.0F) {
                 boolean flag = player.fallDistance > 0.0F
                     && !player.onGround
                     && !player.onClimbable() /* !this.k_() */
@@ -83,7 +105,7 @@ public class AttackHandler {
                     f *= 1.5F;
                 }
 
-                f += f1;
+                f += damageBonus;
                 boolean flag1 = false;
                 //int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
                 int j = EnchantmentHelper.getFireAspect(player);
@@ -121,7 +143,8 @@ public class AttackHandler {
                             Mth.cos(yaw) * (float) i * 0.5F
                         ));
                         player.setDeltaMovement(player.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
-                        player.setSprinting(false);
+                        if (!LegacyCombatSimulation.configuration.isDisableSprintInterruptionOnAttack())
+                            player.setSprinting(false);
                     }
 
                     if (entity instanceof ServerPlayer entityPlayer && PlayerVelocity.velocityChanged(entityPlayer)) {
@@ -152,7 +175,7 @@ public class AttackHandler {
                     }
 
                     /* most likely magic crit? */
-                    if (f1 > 0.0F) {
+                    if (damageBonus > 0.0F) {
                         //this.c(entity);
                         player.magicCrit(entity);
                     }
@@ -221,11 +244,75 @@ public class AttackHandler {
                     entity.clearFire();
                 }
             } else {
-                debugContext.fail("No damage f=%s f1=$s", f, f1);
+                debugContext.fail("No damage f=%s f1=$s", f, damageBonus);
             }
         } else {
             debugContext.fail("skipAttackInteraction()");
         }
         /*}*/
+    }
+
+    private static float calculateAttributeValue(AttributeInstance attributeInstance, ItemStack itemInHand) {
+        if (attributeInstance == null)
+            return 0;
+        double d = attributeInstance.getBaseValue();
+        for (AttributeModifier attributeModifier : attributeInstance.getModifiers(AttributeModifier.Operation.ADDITION)) {
+            if (attributeModifier.getId().equals(BASE_ATTACK_DAMAGE_UUID)) { // ItemStack Attack Modifiers
+                d += oldDamageByItem(itemInHand);
+            } else
+                d += attributeModifier.getAmount();
+        }
+
+        double e = d;
+
+        for (AttributeModifier attributeModifier2 : attributeInstance.getModifiers(AttributeModifier.Operation.MULTIPLY_BASE)) {
+            e += d * attributeModifier2.getAmount();
+        }
+
+        for (AttributeModifier attributeModifier3 : attributeInstance.getModifiers(AttributeModifier.Operation.MULTIPLY_TOTAL)) {
+            e *= 1.0D + attributeModifier3.getAmount();
+        }
+
+        return (float) attributeInstance.getAttribute().sanitizeValue(e);
+    }
+
+    private static float oldDamageByItem(ItemStack itemStack) {
+        if (itemStack == null)
+            return 1;
+        Item item = itemStack.getItem();
+        if (item instanceof TridentItem)
+            return 7; // via backwards displays it as diamond sword
+        float material = 0;
+        float tool = 0;
+        if (item instanceof SwordItem swordItem) {
+            Tier tier = swordItem.getTier();
+            tool = 4;
+            if (tier instanceof Tiers enumTier) { // Tier has only one implementation
+                switch (enumTier) {
+                    case GOLD, WOOD -> material = 0;
+                    case STONE -> material = 1;
+                    case IRON -> material = 2;
+                    case DIAMOND, NETHERITE -> material = 3;
+                }
+            }
+        }
+        if (item instanceof DiggerItem diggerItem) {
+            Tier tier = diggerItem.getTier();
+            if (tier instanceof Tiers enumTier) { // Tier has only one implementation
+                switch (enumTier) {
+                    case GOLD, WOOD -> material = 0;
+                    case STONE -> material = 1;
+                    case IRON -> material = 2;
+                    case DIAMOND, NETHERITE -> material = 3;
+                }
+            }
+            if (diggerItem instanceof ShovelItem)
+                tool = 1;
+            else if (diggerItem instanceof PickaxeItem)
+                tool = 2;
+            else if (diggerItem instanceof AxeItem)
+                tool = 3;
+        }
+        return tool + material;
     }
 }

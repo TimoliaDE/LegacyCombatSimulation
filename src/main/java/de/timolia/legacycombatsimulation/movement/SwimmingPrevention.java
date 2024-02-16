@@ -15,6 +15,7 @@ import org.bukkit.entity.Pose;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPoseChangeEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SwimmingPrevention implements Listener {

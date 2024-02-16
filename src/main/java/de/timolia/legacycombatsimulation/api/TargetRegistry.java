@@ -4,13 +4,17 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public class TargetRegistry {
     private static final TargetRegistry instance = new TargetRegistry();
+    private static EnumSet<SimulationTarget> clientIndependentTargets = EnumSet.noneOf(SimulationTarget.class);
+    static {
+        for (SimulationTarget value : SimulationTarget.values()) {
+            if (!value.isOnlyForLegacyClients())
+                clientIndependentTargets.add(value);
+        }
+    }
 
     public static TargetRegistry instance() {
         return instance;
@@ -25,6 +29,13 @@ public class TargetRegistry {
     public void enable(Player player, Collection<SimulationTarget> targets) {
         if (registry.putAll(player, targets)) {
             new SimulationTargetChangeEvent(player, EnumSet.copyOf(targets), true).callEvent();
+        }
+    }
+
+    public void enableAll(Player player, boolean isLegacyClient) {
+        EnumSet<SimulationTarget> values = isLegacyClient ? EnumSet.allOf(SimulationTarget.class) : clientIndependentTargets;
+        if (registry.putAll(player, EnumSet.allOf(SimulationTarget.class))) {
+            new SimulationTargetChangeEvent(player, values, true).callEvent();
         }
     }
 

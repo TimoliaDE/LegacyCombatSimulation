@@ -1,6 +1,8 @@
 package de.timolia.legacycombatsimulation.attack.nms;
 
 import com.google.common.base.Function;
+import de.timolia.legacycombatsimulation.api.SimulationTarget;
+import de.timolia.legacycombatsimulation.api.TargetRegistry;
 import de.timolia.legacycombatsimulation.attack.debug.DebugProvider.DebugContext;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +15,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.bukkit.Tag;
@@ -105,7 +110,21 @@ public class Damage {
             }
 
             f = (float) event.getFinalDamage();
-            // TODO damage armor
+
+            // This is in LivingEntity, but only implemented by players
+            if (entity instanceof Player player) {
+                // Apply damage to helmet
+                if (damagesource.is(DamageTypeTags.DAMAGES_HELMET) && !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+                    int damage = (int) (event.getDamage() * 4.0F + player.getRandom().nextFloat() * event.getDamage() * 2.0F);
+                    player.getInventory().hurtArmor(damagesource, damage, Inventory.HELMET_SLOT_ONLY);
+                }
+
+                // Apply damage to armor
+                if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR)) {
+                    float armorDamage = (float) (event.getDamage() + event.getDamage(DamageModifier.BLOCKING) + event.getDamage(DamageModifier.HARD_HAT));
+                    player.getInventory().hurtArmor(damagesource, armorDamage, Inventory.ALL_ARMOR_SLOTS);
+                }
+            }
 
             // Resistance
             if (event.getDamage(DamageModifier.RESISTANCE) < 0) {
@@ -182,12 +201,24 @@ public class Damage {
         return false; // CraftBukkit
     }
 
-    //TODO armor
+
     protected static float getDamageAfterArmorAbsorb(LivingEntity entity, DamageSource source, float amount) {
-        if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
-            // this.hurtArmor(damagesource, f); // CraftBukkit - Moved into damageEntity0(DamageSource, float)
-            amount = CombatRules.getDamageAfterAbsorb(amount, (float) entity.getArmorValue(), (float) entity.getAttributeValue(
-                Attributes.ARMOR_TOUGHNESS));
+
+        boolean oldItemValues = false;
+        if (entity instanceof ServerPlayer serverPlayer) {
+            oldItemValues = TargetRegistry.instance().isEnabled(serverPlayer.getBukkitEntity(), SimulationTarget.ITEM_DAMAGE_VALUES);
+        }
+        if (oldItemValues) {
+            if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
+                int defenseValue = 25 - getTotalDefenseValue(entity);
+                amount *= defenseValue / 25.0F;
+            }
+        } else {
+            if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
+                // this.hurtArmor(damagesource, f); // CraftBukkit - Moved into damageEntity0(DamageSource, float)
+                amount = CombatRules.getDamageAfterAbsorb(amount, (float) entity.getArmorValue(), (float) entity.getAttributeValue(
+                        Attributes.ARMOR_TOUGHNESS));
+            }
         }
 
         return amount;
@@ -225,5 +256,16 @@ public class Damage {
 
     protected static boolean isEntityLegacyBlocking(LivingEntity livingEntity) {
         return Tag.ITEMS_SWORDS.isTagged(livingEntity.getBukkitLivingEntity().getActiveItem().getType());
+    }
+
+    private static int getTotalDefenseValue(LivingEntity livingEntity) {
+        int i = 0;
+        for (ItemStack itemStack : livingEntity.getArmorSlots()) {
+            if (itemStack != null && itemStack.getItem() instanceof ArmorItem armorItem) {
+                int l = armorItem.getDefense(); // values are the same for 1.8/1.20
+                i += l;
+            }
+        }
+        return i;
     }
 }
