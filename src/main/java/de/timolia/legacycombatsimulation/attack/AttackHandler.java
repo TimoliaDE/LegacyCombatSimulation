@@ -138,9 +138,10 @@ public class AttackHandler {
                         //this.motZ *= 0.6D;
                         float yaw = player.getYRot() * 0.017453292F; /* Math.DEGREES_TO_RADIANS */
                         entity.addDeltaMovement(new Vec3(
-                            -Mth.sin(yaw) * (float) i * 0.5F,
-                            0.1D,
-                            Mth.cos(yaw) * (float) i * 0.5F
+                                // All base values below are half of what 1.8 uses. No idea why, but everything seems to result in double the velocity on new versions
+                            -Mth.sin(yaw) * (float) i * 0.25F * LegacyCombatSimulation.configuration.getHorizontalKnockbackMultiplier(),
+                            0.05D * LegacyCombatSimulation.configuration.getVerticalKnockbackMultiplier(),
+                            Mth.cos(yaw) * (float) i * 0.25F * LegacyCombatSimulation.configuration.getHorizontalKnockbackMultiplier() // 0.25D is normal, but users do not like it
                         ));
                         player.setDeltaMovement(player.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
                         if (!LegacyCombatSimulation.configuration.isDisableSprintInterruptionOnAttack())

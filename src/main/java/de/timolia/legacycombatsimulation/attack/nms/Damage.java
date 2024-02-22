@@ -64,7 +64,7 @@ public class Damage {
             Function<Double, Double> armor = new Function<Double, Double>() {
                 @Override
                 public Double apply(Double f) {
-                    return -(f - getDamageAfterArmorAbsorb(entity, damagesource, f.floatValue()));
+                    return -(f - getDamageAfterArmorAbsorb(entity, damagesource.is(DamageTypeTags.BYPASSES_ARMOR), f.floatValue(), SimulationTarget.ITEM_DAMAGE_VALUES));
                 }
             };
             float armorModifier = armor.apply((double) f).floatValue();
@@ -202,19 +202,19 @@ public class Damage {
     }
 
 
-    protected static float getDamageAfterArmorAbsorb(LivingEntity entity, DamageSource source, float amount) {
+    public static float getDamageAfterArmorAbsorb(LivingEntity entity, boolean bypassArmor, float amount, SimulationTarget simulationTarget) {
 
         boolean oldItemValues = false;
         if (entity instanceof ServerPlayer serverPlayer) {
-            oldItemValues = TargetRegistry.instance().isEnabled(serverPlayer.getBukkitEntity(), SimulationTarget.ITEM_DAMAGE_VALUES);
+            oldItemValues = TargetRegistry.instance().isEnabled(serverPlayer.getBukkitEntity(), simulationTarget);
         }
         if (oldItemValues) {
-            if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
+            if (!bypassArmor) {
                 int defenseValue = 25 - getTotalDefenseValue(entity);
                 amount *= defenseValue / 25.0F;
             }
         } else {
-            if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
+            if (!bypassArmor) {
                 // this.hurtArmor(damagesource, f); // CraftBukkit - Moved into damageEntity0(DamageSource, float)
                 amount = CombatRules.getDamageAfterAbsorb(amount, (float) entity.getArmorValue(), (float) entity.getAttributeValue(
                         Attributes.ARMOR_TOUGHNESS));

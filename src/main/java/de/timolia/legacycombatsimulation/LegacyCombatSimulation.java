@@ -12,8 +12,10 @@ import de.timolia.legacycombatsimulation.consume.GoldenApple;
 import de.timolia.legacycombatsimulation.consume.HungerSystem;
 import de.timolia.legacycombatsimulation.environement.FireBlock;
 import de.timolia.legacycombatsimulation.environement.Sounds;
+import de.timolia.legacycombatsimulation.environement.TnT;
 import de.timolia.legacycombatsimulation.inventory.CreativeGiveItems;
 import de.timolia.legacycombatsimulation.inventory.OffHand;
+import de.timolia.legacycombatsimulation.movement.MovementCommand;
 import de.timolia.legacycombatsimulation.movement.SwimmingPrevention;
 import de.timolia.legacycombatsimulation.projectile.arrow.Bow;
 import de.timolia.legacycombatsimulation.projectile.EnderPearl;
@@ -24,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,6 +38,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
     public void onEnable() {
         plugin = this;
         getCommand("LegacyCombatSimulation").setExecutor(new DebugCommand());
+        getCommand("modifykb").setExecutor(new MovementCommand());
         AttackHandler attackHandler = new AttackHandler();
         AttackInterceptor interceptor = new AttackInterceptor(attackHandler);
         interceptor.register(this);
@@ -52,6 +56,7 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
             new FireBlock(),
             new HungerSystem(),
             new Sounds(this),
+            new TnT(),
             this
         );
 
@@ -72,5 +77,10 @@ public class LegacyCombatSimulation extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerQuitEvent event) {
         TargetRegistry.instance().disableAll(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onSpring(PlayerToggleSprintEvent event) {
+
     }
 }

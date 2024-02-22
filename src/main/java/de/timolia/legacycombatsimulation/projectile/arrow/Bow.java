@@ -16,12 +16,15 @@ import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class Bow implements Listener {
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onShoot(EntityShootBowEvent event) {
+        if (event.isCancelled())
+            return;
         if (
             !(event.getEntity() instanceof Player player)
             || !TargetRegistry.instance().isEnabled(player, SimulationTarget.BOW)

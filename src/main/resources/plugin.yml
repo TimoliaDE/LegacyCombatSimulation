@@ -15,3 +15,5 @@ commands:
   LegacyCombatSimulation:
     permission: legacycombatsimulation.debug
     alias: ['lcs']
+  modifykb:
+    permission: legacycombatsimulation.modifykb

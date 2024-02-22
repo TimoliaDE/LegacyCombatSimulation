@@ -13,6 +13,7 @@ public enum SimulationTarget {
     INSTANT_IGNITE,
     HUNGER_AND_REGENERATION,
     ITEM_DAMAGE_VALUES,
+    OLD_TNT,
 
     LEGACY_CLIENT_SOUNDS(true),
     ;
