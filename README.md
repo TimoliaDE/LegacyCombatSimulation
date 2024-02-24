@@ -1,9 +1,9 @@
 # LegacyCombatSimulation
 
-Simulates legacy combat (1.8.8) for legacy clients on modern (1.19+) servers. This project does does NOT try to simulate 1.8 pvp for 1.19 players. It only supports 1.8-1.12 clients.
+Simulates legacy combat (1.8.8) for legacy clients on modern (1.20+) servers. This project does NOT try to simulate 1.8 pvp for 1.20+ players. It only supports 1.8-1.12 clients.
 
 ## Why?
-LegacyCombatSimulation was build for server (networks) who do not want to maintain multiple minecraft versions, but also dont want to completely drop 1.8 (as it is still commonly used in the pvp community).
+LegacyCombatSimulation was build for server (networks) who do not want to maintain multiple minecraft versions, but also don't want to completely drop 1.8 (as it is still commonly used in the pvp community).
 
 ## Milestones
 12.03.2023: First build with correct motion tracking and knockback<br>
