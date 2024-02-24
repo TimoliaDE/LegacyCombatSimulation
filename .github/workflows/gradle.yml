@@ -27,4 +27,8 @@ jobs:
         MAVEN_LIVE_USER: ${{ secrets.MAVEN_LIVE_USER }}
         MAVEN_LIVE_REPO: ${{ secrets.MAVEN_LIVE_REPO }}
         MAVEN_LIVE_URL: ${{ secrets.MAVEN_LIVE_URL }}
+        MAVEN_DEV_TOKEN: ${{ secrets.MAVEN_DEV_TOKEN }}
+        MAVEN_DEV_USER: ${{ secrets.MAVEN_DEV_USER }}
+        MAVEN_DEV_REPO: ${{ secrets.MAVEN_DEV_REPO }}
+        MAVEN_DEV_URL: ${{ secrets.MAVEN_DEV_URL }}
       run: ./gradlew --build-cache --warning-mode all build publish
