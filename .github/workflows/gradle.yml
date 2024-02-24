@@ -22,4 +22,9 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
     - name: Build with Gradle
+      env:
+        MAVEN_LIVE_TOKEN: ${{ secrets.MAVEN_LIVE_TOKEN }}
+        MAVEN_LIVE_USER: ${{ secrets.MAVEN_LIVE_USER }}
+        MAVEN_LIVE_REPO: ${{ secrets.MAVEN_LIVE_REPO }}
+        MAVEN_LIVE_URL: ${{ secrets.MAVEN_LIVE_URL }}
       run: ./gradlew --build-cache --warning-mode all build publish
